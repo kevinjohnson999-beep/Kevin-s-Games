@@ -1,5 +1,5 @@
 # Kevin's Games
 
-This is the active app folder going forward.
+This is the active Kevin's Games app folder.
 
-The old `outputs/dominoes-friends` prototype is being ignored because that Dominoes game does not work well enough to build on.
+It currently includes the Kevin's Games sign-in flow, the game chooser, and Dominoes.

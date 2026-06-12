@@ -64,6 +64,7 @@ const els = {
   targetScore: document.querySelector("#targetScore"),
   privacyMode: document.querySelector("#privacyMode"),
   newGameBtn: document.querySelector("#newGameBtn"),
+  signedInSeat: document.querySelector("#signedInSeat"),
   onlineStatus: document.querySelector("#onlineStatus"),
   onlineRoomCode: document.querySelector("#onlineRoomCode"),
   createOnlineRoomBtn: document.querySelector("#createOnlineRoomBtn"),
@@ -254,9 +255,10 @@ function showNewGameSetup() {
   state.gameChosen = true;
   els.gameHub.classList.add("hidden");
   els.appShell.classList.remove("hidden");
-  renderCredentials();
+  renderSignedInSeat();
+  els.playerCredentials.innerHTML = "";
   configureOnlineControls();
-  render("Choose players, then challenge them to dominoes.");
+  render("Set the table size and start a new Dominoes game.");
 }
 
 function renderGameHub() {
@@ -818,6 +820,36 @@ function collectRoster() {
   });
   writeAccounts(accounts);
   return { roster };
+}
+
+function platformRoster() {
+  const count = Number(els.playerCount.value);
+  const player = state.sessionPlayer || { name: "Player 1", password: "", email: "" };
+  const roster = [{
+    name: player.name,
+    password: player.password || "",
+    email: player.email || "",
+  }];
+  for (let index = 1; index < count; index += 1) {
+    roster.push({
+      name: `Open seat ${index + 1}`,
+      password: "",
+      email: "",
+    });
+  }
+  return roster;
+}
+
+function startPlatformGame() {
+  if (state.started) {
+    render("Finish this table before starting another game.");
+    return;
+  }
+  startGame({
+    roster: platformRoster(),
+    target: Number(els.targetScore.value),
+    privacyMode: false,
+  });
 }
 
 function requestPasswordReset(row) {
@@ -1440,6 +1472,16 @@ function renderCredentials() {
   }
 }
 
+function renderSignedInSeat() {
+  if (!els.signedInSeat) return;
+  const playerName = state.sessionPlayer?.name || "Player 1";
+  const seatCount = Number(els.playerCount.value);
+  els.signedInSeat.innerHTML = `
+    <strong>${playerName}</strong>
+    <span>${seatCount - 1} open ${seatCount === 2 ? "seat" : "seats"}</span>
+  `;
+}
+
 function selectTile(tile) {
   if (!canPlay(tile)) return;
   state.selectedId = state.selectedId === tile.id ? null : tile.id;
@@ -1508,13 +1550,16 @@ els.continueGameBtn.addEventListener("click", continueSavedGame);
 els.startNewGameBtn.addEventListener("click", showNewGameSetup);
 els.backToShelfBtn.addEventListener("click", showLobby);
 els.signOutBtn.addEventListener("click", showAuth);
-els.newGameBtn.addEventListener("click", issueChallenge);
+els.newGameBtn.addEventListener("click", startPlatformGame);
 els.createOnlineRoomBtn.addEventListener("click", createOnlineRoom);
 els.joinOnlineRoomBtn.addEventListener("click", joinOnlineRoom);
 els.copyOnlineLinkBtn.addEventListener("click", copyOnlineLink);
 els.showInviteQrBtn.addEventListener("click", showInviteQRCode);
 els.closeQrBtn.addEventListener("click", () => els.qrOverlay.classList.add("hidden"));
-els.playerCount.addEventListener("change", renderCredentials);
+els.playerCount.addEventListener("change", () => {
+  renderSignedInSeat();
+  if (els.playerCredentials.children.length) renderCredentials();
+});
 els.drawBtn.addEventListener("click", drawTile);
 els.passBtn.addEventListener("click", passTurn);
 els.leftEndBtn.addEventListener("click", () => state.selectedId && playTile(state.selectedId, "left"));
@@ -1540,7 +1585,7 @@ els.handoffPassword.addEventListener("keydown", (event) => {
   if (event.key === "Enter") els.revealBtn.click();
 });
 
-renderCredentials();
+renderSignedInSeat();
 render("Sign in to choose a game.");
 showAuth();
 

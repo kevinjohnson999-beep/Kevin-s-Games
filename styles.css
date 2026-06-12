@@ -288,6 +288,25 @@ input[type="email"] {
   grid-template-columns: 82px minmax(110px, 0.55fr) minmax(0, 1fr);
 }
 
+.signed-in-seat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 900;
+}
+
+.signed-in-seat span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
 .credential-title {
   color: var(--muted);
   font-size: 0.82rem;
