@@ -4,47 +4,258 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1f6b4d" />
-    <meta name="description" content="Kevin's Games is a phone-friendly game platform for friends." />
+    <meta name="description" content="Kevin's Games lets friends choose games, challenge opponents, and continue open matches." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Kevin's Games" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Kevin's Games</title>
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="app">
-      <section id="homeView" class="panel">
-        <div class="mark" aria-hidden="true">KG</div>
-        <h1>Kevin's Games</h1>
-        <p>Choose a game, challenge friends, and play from any phone.</p>
-        <div class="game-list">
-          <button id="ticTacToeBtn" type="button" class="game-card">
-            <strong>Tic-Tac-Toe</strong>
-            <span>Quick two-player game</span>
-          </button>
-          <button type="button" class="game-card disabled" disabled>
-            <strong>Dominoes</strong>
-            <span>Being rebuilt</span>
-          </button>
-        </div>
-      </section>
-
-      <section id="ticTacToeView" class="panel game-panel hidden">
-        <div class="game-head">
+    <section id="authScreen" class="entry-screen" aria-label="Sign in or sign up">
+      <div class="entry-card">
+        <div class="brand entry-brand">
+          <div class="mark" aria-hidden="true">KG</div>
           <div>
-            <p class="kicker">Tic-Tac-Toe</p>
-            <h1 id="gameStatus">X goes first</h1>
+            <h1>Kevin's Games</h1>
+            <p>Games with friends</p>
           </div>
-          <button id="backBtn" type="button" class="ghost-btn">Back</button>
         </div>
-        <div id="board" class="board" aria-label="Tic-Tac-Toe board"></div>
-        <div class="actions">
-          <button id="resetBtn" type="button">New round</button>
+        <div class="section-title">
+          <span>Account</span>
+          <strong>Welcome</strong>
         </div>
-      </section>
-    </main>
+        <label>
+          Account type
+          <select id="authMode">
+            <option value="signin">Sign in</option>
+            <option value="signup">Sign up</option>
+          </select>
+        </label>
+        <label>
+          Login name
+          <input id="authName" type="text" autocomplete="username" />
+        </label>
+        <label>
+          Password
+          <input id="authPassword" type="password" autocomplete="current-password" />
+        </label>
+        <label id="authEmailRow">
+          Recovery email
+          <input id="authEmail" type="email" autocomplete="email" />
+        </label>
+        <div id="authMessage" class="form-error" role="status" aria-live="polite"></div>
+        <button id="authSubmitBtn" class="primary-btn">Continue</button>
+      </div>
+    </section>
+
+    <section id="gameLobby" class="entry-screen hidden" aria-label="Choose a game">
+      <div class="entry-card">
+        <div class="section-title">
+          <span id="lobbyPlayer">Signed in</span>
+          <strong>Game shelf</strong>
+        </div>
+        <button id="chooseDominoesBtn" class="game-tile">
+          <strong>Dominoes</strong>
+          <span>Open games and new matches</span>
+        </button>
+        <button id="showAppQrBtn" class="secondary-btn">Show app QR</button>
+        <button id="signOutBtn" class="secondary-btn">Sign out</button>
+      </div>
+    </section>
+
+    <section id="gameHub" class="entry-screen hidden" aria-label="Open games">
+      <div class="entry-card hub-card">
+        <div class="section-title">
+          <span id="selectedGameName">Dominoes</span>
+          <strong>Open games</strong>
+        </div>
+        <div id="openGamesList" class="open-games-list"></div>
+        <button id="continueGameBtn" class="secondary-btn">Continue selected game</button>
+        <button id="startNewGameBtn" class="primary-btn">Start new game</button>
+        <button id="backToShelfBtn" class="secondary-btn">Back to games</button>
+      </div>
+    </section>
+
+    <div id="appShell" class="app-shell hidden">
+      <aside class="sidebar" aria-label="Game setup and players">
+        <div class="brand">
+          <div class="mark" aria-hidden="true">KG</div>
+          <div>
+            <h1>Kevin's Games</h1>
+            <p>Games with friends</p>
+          </div>
+        </div>
+
+        <section class="panel setup-panel">
+          <div class="section-title">
+            <span>Game</span>
+            <strong>Dominoes</strong>
+          </div>
+          <label>
+            Players
+            <select id="playerCount">
+              <option value="2">2 players</option>
+              <option value="3">3 players</option>
+              <option value="4">4 players</option>
+            </select>
+          </label>
+          <label>
+            Winning score
+            <select id="targetScore">
+              <option value="50">50 points</option>
+              <option value="100" selected>100 points</option>
+              <option value="150">150 points</option>
+              <option value="250">250 points</option>
+            </select>
+          </label>
+          <label class="toggle-row">
+            <input id="privacyMode" type="checkbox" checked />
+            Hide hands between turns
+          </label>
+          <div id="playerCredentials" class="player-credentials" aria-label="Player logins"></div>
+          <button id="newGameBtn" class="primary-btn">Challenge players</button>
+        </section>
+
+        <section class="panel online-panel">
+          <div class="section-title">
+            <span>Online</span>
+            <strong id="onlineStatus">Not configured</strong>
+          </div>
+          <label>
+            Room code
+            <input id="onlineRoomCode" type="text" autocomplete="off" />
+          </label>
+          <div class="dialog-actions">
+            <button id="createOnlineRoomBtn" class="secondary-btn">Create room</button>
+            <button id="joinOnlineRoomBtn" class="secondary-btn">Join room</button>
+          </div>
+          <button id="copyOnlineLinkBtn" class="secondary-btn">Copy invite link</button>
+          <button id="showInviteQrBtn" class="secondary-btn">Show invite QR</button>
+        </section>
+
+        <section class="panel">
+          <div class="section-title">
+            <span>Friends</span>
+            <strong id="roomCode">LOCAL-742</strong>
+          </div>
+          <div id="playersList" class="players-list"></div>
+        </section>
+
+        <section class="panel next-games">
+          <div class="section-title">
+            <span>Up next</span>
+            <strong>Game shelf</strong>
+          </div>
+          <button class="game-chip active">Dominoes</button>
+          <button class="game-chip" disabled>Spades</button>
+          <button class="game-chip" disabled>Uno-style cards</button>
+        </section>
+      </aside>
+
+      <main class="table-area">
+        <header class="topbar">
+          <div>
+            <p id="roundLabel">Round 1</p>
+            <h2 id="statusTitle">Start a table</h2>
+          </div>
+          <div class="table-stats">
+            <div>
+              <span>Boneyard</span>
+              <strong id="boneyardCount">0</strong>
+            </div>
+            <div>
+              <span>Open ends</span>
+              <strong id="openEnds">--</strong>
+            </div>
+          </div>
+        </header>
+
+        <section class="board-wrap" aria-label="Domino board">
+          <div class="board-score" aria-live="polite">
+            <span>End score</span>
+            <strong id="boardScoreTotal">--</strong>
+            <small id="boardScoreHint">No tiles</small>
+          </div>
+          <div class="board-ribbon">
+            <button id="topEndBtn" class="end-btn top-end" disabled>Play top</button>
+            <button id="leftEndBtn" class="end-btn" disabled>Play left</button>
+            <div id="board" class="board"></div>
+            <button id="rightEndBtn" class="end-btn" disabled>Play right</button>
+            <button id="bottomEndBtn" class="end-btn bottom-end" disabled>Play bottom</button>
+          </div>
+          <div id="emptyBoard" class="empty-board">
+            <strong>Ready for the first tile</strong>
+            <span>The highest double opens the round.</span>
+          </div>
+        </section>
+
+        <section class="hand-zone" aria-label="Current player hand">
+          <div class="hand-head">
+            <div>
+              <p id="turnKicker">Current turn</p>
+              <h3 id="currentPlayer">Player 1</h3>
+            </div>
+            <div class="action-row">
+              <button id="drawBtn" class="secondary-btn">Draw</button>
+              <button id="passBtn" class="secondary-btn">Pass</button>
+            </div>
+          </div>
+          <div id="hand" class="hand"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="handoffOverlay" class="handoff-overlay hidden" role="dialog" aria-modal="true">
+      <div class="handoff-card">
+        <p>Pass the device</p>
+        <h2 id="handoffName">Player 1</h2>
+        <label>
+          Password
+          <input id="handoffPassword" type="password" autocomplete="current-password" />
+        </label>
+        <div id="handoffError" class="form-error" role="status" aria-live="polite"></div>
+        <button id="revealBtn" class="primary-btn">Reveal hand</button>
+      </div>
+    </div>
+
+    <div id="challengeOverlay" class="handoff-overlay hidden" role="dialog" aria-modal="true">
+      <div class="handoff-card">
+        <p>Game challenge</p>
+        <h2 id="challengeTitle">Dominoes challenge</h2>
+        <div id="challengePlayers" class="challenge-list"></div>
+        <div class="dialog-actions">
+          <button id="declineChallengeBtn" class="secondary-btn">Decline</button>
+          <button id="acceptChallengeBtn" class="primary-btn">Accept challenge</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="rematchOverlay" class="handoff-overlay hidden" role="dialog" aria-modal="true">
+      <div class="handoff-card">
+        <p>Table complete</p>
+        <h2 id="rematchTitle">Play again?</h2>
+        <div class="dialog-actions">
+          <button id="newSetupBtn" class="secondary-btn">New setup</button>
+          <button id="rematchBtn" class="primary-btn">Rematch</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="qrOverlay" class="handoff-overlay hidden" role="dialog" aria-modal="true">
+      <div class="handoff-card qr-card">
+        <p id="qrKicker">Share</p>
+        <h2 id="qrTitle">Scan to open</h2>
+        <div id="qrCode" class="qr-code" aria-label="QR code"></div>
+        <div id="qrLink" class="qr-link"></div>
+        <button id="closeQrBtn" class="primary-btn">Done</button>
+      </div>
+    </div>
+
+    <script src="./online-config.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
