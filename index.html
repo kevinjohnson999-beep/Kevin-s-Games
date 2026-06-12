@@ -15,12 +15,36 @@
   </head>
   <body>
     <main class="app">
-      <section class="panel">
+      <section id="homeView" class="panel">
         <div class="mark" aria-hidden="true">KG</div>
         <h1>Kevin's Games</h1>
         <p>Choose a game, challenge friends, and play from any phone.</p>
-        <button type="button">Games coming soon</button>
+        <div class="game-list">
+          <button id="ticTacToeBtn" type="button" class="game-card">
+            <strong>Tic-Tac-Toe</strong>
+            <span>Quick two-player game</span>
+          </button>
+          <button type="button" class="game-card disabled" disabled>
+            <strong>Dominoes</strong>
+            <span>Being rebuilt</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="ticTacToeView" class="panel game-panel hidden">
+        <div class="game-head">
+          <div>
+            <p class="kicker">Tic-Tac-Toe</p>
+            <h1 id="gameStatus">X goes first</h1>
+          </div>
+          <button id="backBtn" type="button" class="ghost-btn">Back</button>
+        </div>
+        <div id="board" class="board" aria-label="Tic-Tac-Toe board"></div>
+        <div class="actions">
+          <button id="resetBtn" type="button">New round</button>
+        </div>
       </section>
     </main>
+    <script src="./app.js"></script>
   </body>
 </html>

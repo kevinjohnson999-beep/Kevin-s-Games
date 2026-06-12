@@ -31,6 +31,7 @@ button {
   color: white;
   font: inherit;
   font-weight: 800;
+  touch-action: manipulation;
 }
 
 .app {
@@ -72,4 +73,102 @@ p {
   color: var(--muted);
   font-size: 1rem;
   line-height: 1.5;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.game-list {
+  display: grid;
+  gap: 10px;
+}
+
+.game-card {
+  width: 100%;
+  min-height: 76px;
+  display: grid;
+  gap: 4px;
+  align-content: center;
+  text-align: left;
+}
+
+.game-card span {
+  font-size: 0.9rem;
+  font-weight: 700;
+  opacity: 0.86;
+}
+
+.game-card.disabled {
+  background: #d9d4c9;
+  color: var(--ink);
+}
+
+.game-panel {
+  width: min(560px, 100%);
+}
+
+.game-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.game-head h1 {
+  margin-top: 0;
+  font-size: clamp(1.7rem, 6vw, 2.8rem);
+}
+
+.kicker {
+  margin: 0 0 4px;
+  font-weight: 800;
+}
+
+.ghost-btn {
+  width: auto;
+  min-width: 82px;
+  background: #f0ece3;
+  color: var(--ink);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.cell {
+  aspect-ratio: 1;
+  min-height: 0;
+  padding: 0;
+  border: 2px solid var(--ink);
+  background: #fffdf8;
+  color: var(--ink);
+  font-size: clamp(2.6rem, 16vw, 5rem);
+  line-height: 1;
+}
+
+.cell.winner {
+  background: #e5f3e6;
+  border-color: var(--green);
+}
+
+.actions {
+  display: grid;
+}
+
+@media (max-width: 520px) {
+  .panel {
+    padding: 18px;
+  }
+
+  .game-head {
+    display: grid;
+  }
+
+  .ghost-btn {
+    width: 100%;
+  }
 }
